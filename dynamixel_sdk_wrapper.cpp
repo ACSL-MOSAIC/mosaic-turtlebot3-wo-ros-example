@@ -100,7 +100,6 @@ bool DynamixelSDKWrapper::init_dynamixel_sdk_handlers() {
   }
 
   if (portHandler_->setBaudRate(static_cast<int>(device_.baud_rate))) {
-    LOG_INFO("DynamixelSDKWrapper", "Succeeded to change the baudrate!");
     std::cout << "DynamixelSDKWrapper Succeeded to change the baudrate!" << std::endl;
   } else {
     std::cout << "DynamixelSDKWrapper Failed to change the baudrate(" << device_.baud_rate << ")!" << std::endl;
