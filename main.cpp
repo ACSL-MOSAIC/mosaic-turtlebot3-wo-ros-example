@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <atomic>
+#include <random>
 
 #include "dynamixel_sdk_wrapper.hpp"
 #include "control_table.hpp"
@@ -33,6 +34,7 @@ void check_device_status(const std::shared_ptr<DynamixelSDKWrapper> &dxl_sdk_wra
 void main_loop(const std::shared_ptr<RobotContext> &ctx);
 
 std::thread main_loop_thread(const std::shared_ptr<RobotContext> &ctx, std::chrono::milliseconds timeout) {
+    std::cout << "Start Main Loop every " << 1000.0f / timeout.count() << " Hz" << std::endl;
     return std::thread([ctx, timeout]() {
         while (!should_stop) {
             main_loop(ctx);
@@ -45,6 +47,7 @@ std::thread main_loop_thread(const std::shared_ptr<RobotContext> &ctx, std::chro
 void heartbeat(const std::shared_ptr<RobotContext> &ctx);
 
 std::thread heartbeat_thread(const std::shared_ptr<RobotContext> &ctx, std::chrono::milliseconds timeout) {
+    std::cout << "Start Heartbeat every " << 1000.0f / timeout.count() << " Hz" << std::endl;
     return std::thread([ctx, timeout]() {
         while (!should_stop) {
             heartbeat(ctx);
@@ -57,6 +60,7 @@ std::thread heartbeat_thread(const std::shared_ptr<RobotContext> &ctx, std::chro
 void cmd_vel(const std::shared_ptr<RobotContext> &ctx);
 
 std::thread cmd_vel_thread(const std::shared_ptr<RobotContext> &ctx, std::chrono::milliseconds timeout) {
+    std::cout << "Start CmdVel every " << 1000.0f / timeout.count() << " Hz" << std::endl;
     return std::thread([ctx, timeout]() {
         while (!should_stop) {
             cmd_vel(ctx);
@@ -72,24 +76,19 @@ int main() {
     const auto dxl_sdk_wrapper = init_dynamixel_sdk_wrapper(usb_port);
     check_device_status(dxl_sdk_wrapper);
 
-    auto motors_ = std::make_shared<Motors>(Motors{214.577f, 0.0f});
-    auto wheels_ = std::make_shared<Wheels>(Wheels{0.160f, 0.033f});
+    const auto motors_ = std::make_shared<Motors>(Motors{214.577f, 0.0f});
+    const auto wheels_ = std::make_shared<Wheels>(Wheels{0.160f, 0.033f});
 
     // Create robot context
-    auto context = std::make_shared<RobotContext>(RobotContext{
+    const auto context = std::make_shared<RobotContext>(RobotContext{
         dxl_sdk_wrapper,
         motors_,
         wheels_
     });
 
-    std::cout << "Start Main Loop" << std::endl;
     auto main_loop_thread_ = main_loop_thread(context, std::chrono::milliseconds(100));
-
-    std::cout << "Start Heartbeat" << std::endl;
     auto heartbeat_thread_ = heartbeat_thread(context, std::chrono::milliseconds(100));
-
-    std::cout << "Start CmdVel" << std::endl;
-    auto cmd_vel_thread_ = cmd_vel_thread(context, std::chrono::milliseconds(100));
+    auto cmd_vel_thread_ = cmd_vel_thread(context, std::chrono::milliseconds(1000));
 
     std::cout << "Wait until Keyboard Interrupt" << std::endl;
     while (true) {
@@ -186,5 +185,42 @@ void heartbeat(const std::shared_ptr<RobotContext> &ctx) {
 }
 
 void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
-    // TODO: Add cmd_vel logic using ctx->dxl_sdk_wrapper, ctx->motors, ctx->wheels
+    const auto linear_x_max = 22;
+    const auto angular_z_max = 284;
+
+    // 랜덤 생성기 설정
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
+
+    // -1.0 ~ 1.0 사이의 랜덤 값 생성
+    const float linear_rand = dis(gen);
+    const float angular_rand = dis(gen);
+
+    std::string sdk_msg;
+
+    union Data {
+        int32_t dword[6];
+        uint8_t byte[4 * 6];
+    } data;
+
+    data.dword[0] = static_cast<int32_t>(linear_rand * linear_x_max);
+    data.dword[1] = 0;
+    data.dword[2] = 0;
+    data.dword[3] = 0;
+    data.dword[4] = 0;
+    data.dword[5] = static_cast<int32_t>(angular_rand * angular_z_max);
+
+    const uint16_t start_addr = extern_control_table.cmd_velocity_linear_x.addr;
+    const uint16_t addr_length =
+            (extern_control_table.cmd_velocity_angular_z.addr -
+             extern_control_table.cmd_velocity_linear_x.addr) +
+            extern_control_table.cmd_velocity_angular_z.length;
+
+    uint8_t *p_data = &data.byte[0];
+
+    ctx->dxl_sdk_wrapper->set_data_to_device(start_addr, addr_length, p_data, &sdk_msg);
+
+    std::cout << "cmd_vel - lin_vel: " << linear_rand << " ang_vel: " << angular_rand
+            << " msg : " << sdk_msg.c_str() << std::endl;
 }
