@@ -6,7 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(dynamixel_sdk REQUIRED)
 
-add_executable(mosaic_turtlebot3_wo_ros_example main.cpp)
+add_executable(mosaic_turtlebot3_wo_ros_example
+        main.cpp
+        dynamixel_sdk_wrapper.cpp
+)
 
 target_include_directories(mosaic_turtlebot3_wo_ros_example PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
