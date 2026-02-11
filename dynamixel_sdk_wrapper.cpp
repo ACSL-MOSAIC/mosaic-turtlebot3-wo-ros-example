@@ -17,6 +17,7 @@
 #include "dynamixel_sdk_wrapper.hpp"
 
 #include <algorithm>
+#include <iostream>
 #include <string>
 
 using robotis::turtlebot3::DynamixelSDKWrapper;
@@ -24,10 +25,10 @@ using robotis::turtlebot3::DynamixelSDKWrapper;
 DynamixelSDKWrapper::DynamixelSDKWrapper(const Device &device)
   : device_(device) {
   if (init_dynamixel_sdk_handlers() == false) {
-    // LOG_ERROR("DynamixelSDKWrapper", "Failed to initialize SDK handlers");
+    std::cout << "Failed to initialize SDK handlers" << std::endl;
     return;
   } else {
-    // LOG_DEBUG("DynamixelSDKWrapper", "Success to initilize SDK handlers");
+    std::cout << "Success to initilize SDK handlers" << std::endl;
   }
 }
 
@@ -56,11 +57,11 @@ void DynamixelSDKWrapper::read_data_set() {
     &log);
 
   if (ret == false) {
-    LOG_ERROR("DynamixelSDKWrapper", "Failed to read[%s]", log);
+    std::cout << "DynamixelSDKWrapper Failed to read[" << log << "]" << std::endl;
   } else {
     std::lock_guard<std::mutex> lock(read_data_mutex_);
     std::copy(read_data_buffer_, read_data_buffer_ + READ_DATA_SIZE, read_data_);
-    LOG_DEBUG("DynamixelSDKWrapper", "Succeeded to read");
+    std::cout << "DynamixelSDKWrapper Succeeded to read" << std::endl;
   }
 }
 
@@ -92,16 +93,17 @@ bool DynamixelSDKWrapper::init_dynamixel_sdk_handlers() {
       dynamixel::PacketHandler::getPacketHandler(static_cast<int>(device_.protocol_version));
 
   if (portHandler_->openPort()) {
-    LOG_INFO("DynamixelSDKWrapper", "Succeeded to open the port(%s)!", device_.usb_port.c_str());
+    std::cout << "DynamixelSDKWrapper Succeeded to open the port(" << device_.usb_port.c_str() << ")" << std::endl;
   } else {
-    LOG_ERROR("DynamixelSDKWrapper", "Failed to open the port(%s)!", device_.usb_port.c_str());
+    std::cout << "DynamixelSDKWrapper Failed to open the port(" << device_.usb_port.c_str() << ")!" << std::endl;
     return false;
   }
 
   if (portHandler_->setBaudRate(static_cast<int>(device_.baud_rate))) {
     LOG_INFO("DynamixelSDKWrapper", "Succeeded to change the baudrate!");
+    std::cout << "DynamixelSDKWrapper Succeeded to change the baudrate!" << std::endl;
   } else {
-    LOG_ERROR("DynamixelSDKWrapper", "Failed to change the baudrate(%d)!", device_.baud_rate);
+    std::cout << "DynamixelSDKWrapper Failed to change the baudrate(" << device_.baud_rate << ")!" << std::endl;
     return false;
   }
 
