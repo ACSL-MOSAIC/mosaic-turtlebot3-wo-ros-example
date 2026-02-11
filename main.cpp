@@ -67,7 +67,7 @@ std::thread cmd_vel_thread(const std::shared_ptr<RobotContext> &ctx, std::chrono
 }
 
 int main() {
-    const auto usb_port = "/dev/ttyUSB0";
+    const auto usb_port = "/dev/ttyACM0";
 
     const auto dxl_sdk_wrapper = init_dynamixel_sdk_wrapper(usb_port);
     check_device_status(dxl_sdk_wrapper);
