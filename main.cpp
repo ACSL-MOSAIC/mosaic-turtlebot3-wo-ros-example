@@ -180,7 +180,7 @@ void heartbeat(const std::shared_ptr<RobotContext> &ctx) {
         &count,
         &msg);
 
-    std::cout << "hearbeat count : " << count << ", msg : " << msg << std::endl;
+    std::cout << "hearbeat count : " << static_cast<int>(count) << ", msg : " << msg << std::endl;
 
     count++;
 }
