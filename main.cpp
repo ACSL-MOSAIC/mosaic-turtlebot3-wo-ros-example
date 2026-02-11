@@ -157,19 +157,12 @@ void check_device_status(const std::shared_ptr<DynamixelSDKWrapper> &dxl_sdk_wra
         return;
     }
 
-    const int8_t NOT_CONNECTED_MOTOR = -1;
-
-    int8_t device_status = dxl_sdk_wrapper_->get_data_from_device<int8_t>(
+    const auto device_status = dxl_sdk_wrapper_->get_data_from_device<int8_t>(
         extern_control_table.device_status.addr,
         extern_control_table.device_status.length);
 
-    switch (device_status) {
-        case NOT_CONNECTED_MOTOR:
-            std::cout << "Please double check your Dynamixels and Power" << std::endl;
-            break;
-
-        default:
-            break;
+    if (constexpr int8_t NOT_CONNECTED_MOTOR = -1; device_status == NOT_CONNECTED_MOTOR) {
+        std::cout << "Please check your Dynamixels and Power" << std::endl;
     }
 }
 
@@ -186,6 +179,10 @@ void heartbeat(const std::shared_ptr<RobotContext> &ctx) {
         extern_control_table.heartbeat.length,
         &count,
         &msg);
+
+    std::cout << "hearbeat count : " << count << ", msg : " << msg << std::endl;
+
+    count++;
 }
 
 void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
