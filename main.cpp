@@ -188,12 +188,10 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
     const auto linear_x_max = 22;
     const auto angular_z_max = 284;
 
-    // 랜덤 생성기 설정
     static std::random_device rd;
     static std::mt19937 gen(rd());
     static std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
 
-    // -1.0 ~ 1.0 사이의 랜덤 값 생성
     const float linear_rand = dis(gen);
     const float angular_rand = dis(gen);
 
