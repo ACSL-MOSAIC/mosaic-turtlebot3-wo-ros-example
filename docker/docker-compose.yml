@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  turtlebot3:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: mosaic-turtlebot3-wo-ros:latest
+    container_name: turtlebot3-controller
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+    privileged: true
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
