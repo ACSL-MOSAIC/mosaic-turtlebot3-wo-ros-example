@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Docker 이미지 빌드 스크립트
+# Docker image build script
 
 set -e
 
