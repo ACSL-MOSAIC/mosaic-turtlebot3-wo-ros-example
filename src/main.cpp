@@ -110,8 +110,8 @@ int main() {
     });
 
     auto main_loop_thread_ = main_loop_thread(context, std::chrono::milliseconds(100));
-    auto heartbeat_thread_ = heartbeat_thread(context, std::chrono::milliseconds(100));
-    auto cmd_vel_thread_ = cmd_vel_thread(context, std::chrono::milliseconds(1000));
+    auto heartbeat_thread_ = heartbeat_thread(context, std::chrono::milliseconds(5000));
+    auto cmd_vel_thread_ = cmd_vel_thread(context, std::chrono::milliseconds(3000));
     auto laser_thread_ = laser_thread(context, std::chrono::milliseconds(100));
 
     std::cout << "Wait until Keyboard Interrupt" << std::endl;
@@ -213,8 +213,8 @@ void heartbeat(const std::shared_ptr<RobotContext> &ctx) {
 }
 
 void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
-    const auto linear_x_max = 22;
-    const auto angular_z_max = 284;
+    const auto linear_x_max = 2.2;
+    const auto angular_z_max = 28.4;
 
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -255,4 +255,8 @@ void laser(const std::shared_ptr<RobotContext> &ctx) {
     const auto scan = std::make_shared<LaserScan>();
     ctx->laser->poll(scan);
     std::cout << "scan range : " << scan->ranges.size() << std::endl;
+    std::cout << "scan angle : " << scan->angle_min << " ~ " << scan->angle_max << std::endl;
+    std::cout << "scan range : " << scan->ranges[0] << " ~ " << scan->ranges[scan->ranges.size() - 1] << std::endl;
+    std::cout << "scan intensity : " << scan->intensities[0] << " ~ " << scan->intensities[scan->intensities.size() - 1]
+            << std::endl;
 }
