@@ -2,9 +2,12 @@
 #include <memory>
 #include <atomic>
 #include <random>
+#include <boost/asio.hpp>
 
-#include "dynamixel_sdk_wrapper.hpp"
-#include "control_table.hpp"
+#include "hlds/laser_scan.hpp"
+#include "hlds/lfcd_laser.hpp"
+#include "turtlebot3/dynamixel_sdk_wrapper.hpp"
+#include "turtlebot3/control_table.hpp"
 
 using namespace robotis::turtlebot3;
 
@@ -25,6 +28,8 @@ struct RobotContext {
     std::shared_ptr<DynamixelSDKWrapper> dxl_sdk_wrapper;
     std::shared_ptr<Motors> motors;
     std::shared_ptr<Wheels> wheels;
+    std::shared_ptr<boost::asio::io_context> io_context;
+    std::shared_ptr<hls_lfcd_lds::LFCDLaser> laser;
 };
 
 std::shared_ptr<DynamixelSDKWrapper> init_dynamixel_sdk_wrapper(const std::string &usb_port);
@@ -70,25 +75,44 @@ std::thread cmd_vel_thread(const std::shared_ptr<RobotContext> &ctx, std::chrono
     });
 }
 
-int main() {
-    const auto usb_port = "/dev/ttyACM0";
+void laser(const std::shared_ptr<RobotContext> &ctx);
 
-    const auto dxl_sdk_wrapper = init_dynamixel_sdk_wrapper(usb_port);
+std::thread laser_thread(const std::shared_ptr<RobotContext> &ctx, std::chrono::milliseconds timeout) {
+    std::cout << "Start Laser every " << 1000.0f / timeout.count() << " Hz" << std::endl;
+    return std::thread([ctx, timeout]() {
+        while (!should_stop) {
+            laser(ctx);
+            std::this_thread::sleep_for(timeout);
+        }
+        std::cout << "Laser thread stopped" << std::endl;
+    });
+}
+
+int main() {
+    // Initialize turtlebot dxl sdk
+    const auto dxl_sdk_wrapper = init_dynamixel_sdk_wrapper("/dev/ttyACM0");
     check_device_status(dxl_sdk_wrapper);
 
     const auto motors_ = std::make_shared<Motors>(Motors{214.577f, 0.0f});
     const auto wheels_ = std::make_shared<Wheels>(Wheels{0.160f, 0.033f});
 
+    // Initialize laser components
+    const auto hlds_io_context = std::make_shared<boost::asio::io_context>();
+    const auto laser_ = std::make_shared<hls_lfcd_lds::LFCDLaser>("/dev/ttyUSB0", 230400, *hlds_io_context);
+
     // Create robot context
     const auto context = std::make_shared<RobotContext>(RobotContext{
         dxl_sdk_wrapper,
         motors_,
-        wheels_
+        wheels_,
+        hlds_io_context,
+        laser_
     });
 
     auto main_loop_thread_ = main_loop_thread(context, std::chrono::milliseconds(100));
     auto heartbeat_thread_ = heartbeat_thread(context, std::chrono::milliseconds(100));
     auto cmd_vel_thread_ = cmd_vel_thread(context, std::chrono::milliseconds(1000));
+    auto laser_thread_ = laser_thread(context, std::chrono::milliseconds(100));
 
     std::cout << "Wait until Keyboard Interrupt" << std::endl;
     while (true) {
@@ -114,6 +138,10 @@ int main() {
 
     if (cmd_vel_thread_.joinable()) {
         cmd_vel_thread_.join();
+    }
+
+    if (laser_thread_.joinable()) {
+        laser_thread_.join();
     }
 
     std::cout << "All threads stopped" << std::endl;
@@ -221,4 +249,10 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
 
     std::cout << "cmd_vel - lin_vel: " << linear_rand << " ang_vel: " << angular_rand
             << " msg : " << sdk_msg.c_str() << std::endl;
+}
+
+void laser(const std::shared_ptr<RobotContext> &ctx) {
+    const auto scan = std::make_shared<LaserScan>();
+    ctx->laser->poll(scan);
+    std::cout << "scan range : " << scan->ranges.size() << std::endl;
 }

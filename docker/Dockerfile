@@ -10,8 +10,11 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     git \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
+    gcc
+
+RUN apt-get install -y libboost-all-dev
+
+RUN rm -rf /var/lib/apt/lists/*
 
 # Create working directory
 WORKDIR /workspace
