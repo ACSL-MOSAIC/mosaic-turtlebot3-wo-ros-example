@@ -65,6 +65,8 @@ ENV TZ=Asia/Seoul
 # Install runtime dependencies only
 RUN apt-get update && apt-get install -y \
     libstdc++6 \
+    libcpprest-dev \
+    libjsoncpp-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy DynamixelSDK library (for Raspberry Pi)
