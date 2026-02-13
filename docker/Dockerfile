@@ -73,6 +73,10 @@ RUN apt-get update && apt-get install -y \
 COPY --from=builder /usr/local/lib/libdxl_sbc_cpp.so /usr/local/lib/
 COPY --from=builder /usr/local/include/dynamixel_sdk /usr/local/include/dynamixel_sdk
 
+# Copy yaml-cpp library
+COPY --from=builder /usr/local/lib/libyaml-cpp.so* /usr/local/lib/
+COPY --from=builder /usr/local/include/yaml-cpp /usr/local/include/yaml-cpp
+
 # Copy mosaic-core libraries
 COPY --from=builder /usr/local/lib/libmosaic*.so* /usr/local/lib/
 COPY --from=builder /usr/local/include/mosaic /usr/local/include/mosaic
