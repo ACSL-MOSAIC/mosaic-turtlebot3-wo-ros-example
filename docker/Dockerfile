@@ -71,6 +71,10 @@ RUN apt-get update && apt-get install -y \
 COPY --from=builder /usr/local/lib/libdxl_sbc_cpp.so /usr/local/lib/
 COPY --from=builder /usr/local/include/dynamixel_sdk /usr/local/include/dynamixel_sdk
 
+# Copy mosaic-core libraries
+COPY --from=builder /usr/local/lib/libmosaic*.so* /usr/local/lib/
+COPY --from=builder /usr/local/include/mosaic /usr/local/include/mosaic
+
 # Copy built executable
 COPY --from=builder /workspace/project/build/mosaic_turtlebot3_wo_ros_example /usr/local/bin/
 
