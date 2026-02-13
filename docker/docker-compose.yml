@@ -5,7 +5,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    image: mosaic-turtlebot3-wo-ros:latest
+    image: public.ecr.aws/m2q6t6y3/mosaic/mosaic-turtlebot-ex:latest
     container_name: turtlebot3-controller
     volumes:
       - ./mosaic-config.yaml:/app/mosaic_config.yaml
