@@ -4,6 +4,12 @@
 #include <random>
 #include <boost/asio.hpp>
 
+#include <mosaic/auto_configurer/connector/connector_resolver.h>
+
+#include "ctx.hpp"
+#include "mosaic/turtlebot_auto_configurer.hpp"
+#include "mosaic/laser_scan_sender.hpp"
+#include "mosaic/teleop_receiver.hpp"
 #include "hlds/laser_scan.hpp"
 #include "hlds/lfcd_laser.hpp"
 #include "turtlebot3/dynamixel_sdk_wrapper.hpp"
@@ -12,25 +18,7 @@
 using namespace robotis::turtlebot3;
 
 // Global flag to signal threads to stop
-std::atomic<bool> should_stop(false);
-
-typedef struct {
-    float separation;
-    float radius;
-} Wheels;
-
-typedef struct {
-    float profile_acceleration_constant;
-    float profile_acceleration;
-} Motors;
-
-struct RobotContext {
-    std::shared_ptr<DynamixelSDKWrapper> dxl_sdk_wrapper;
-    std::shared_ptr<Motors> motors;
-    std::shared_ptr<Wheels> wheels;
-    std::shared_ptr<boost::asio::io_context> io_context;
-    std::shared_ptr<hls_lfcd_lds::LFCDLaser> laser;
-};
+std::atomic should_stop(false);
 
 std::shared_ptr<DynamixelSDKWrapper> init_dynamixel_sdk_wrapper(const std::string &usb_port);
 
@@ -89,8 +77,12 @@ std::thread laser_thread(const std::shared_ptr<RobotContext> &ctx, std::chrono::
 }
 
 int main() {
+    const auto dxl_usb_port = "/dev/ttyACM0";
+    const auto hlds_usb_port = "/dev/ttyUSB0";
+    const auto mosaic_config_path = "/app/mosaic_config.yaml";
+
     // Initialize turtlebot dxl sdk
-    const auto dxl_sdk_wrapper = init_dynamixel_sdk_wrapper("/dev/ttyACM0");
+    const auto dxl_sdk_wrapper = init_dynamixel_sdk_wrapper(dxl_usb_port);
     check_device_status(dxl_sdk_wrapper);
 
     const auto motors_ = std::make_shared<Motors>(Motors{214.577f, 0.0f});
@@ -98,7 +90,7 @@ int main() {
 
     // Initialize laser components
     const auto hlds_io_context = std::make_shared<boost::asio::io_context>();
-    const auto laser_ = std::make_shared<hls_lfcd_lds::LFCDLaser>("/dev/ttyUSB0", 230400, *hlds_io_context);
+    const auto laser_ = std::make_shared<hls_lfcd_lds::LFCDLaser>(hlds_usb_port, 230400, *hlds_io_context);
 
     // Create robot context
     const auto context = std::make_shared<RobotContext>(RobotContext{
@@ -106,8 +98,20 @@ int main() {
         motors_,
         wheels_,
         hlds_io_context,
-        laser_
+        laser_,
+        nullptr,
+        nullptr,
+        std::make_shared<std::atomic_bool>(false)
     });
+
+    // Initialize MOSAIC
+    mosaic::auto_configurer::ConnectorResolver::GetInstance().RegisterConfigurableConnector<TeleopReceiverConfigurer>();
+    mosaic::auto_configurer::ConnectorResolver::GetInstance().RegisterConfigurableConnector<
+        LaserScanSenderConfigurer>();
+
+    const auto auto_configurer = std::make_shared<TurtlebotAutoConfigurer>();
+    auto_configurer->SetRobotContext(context);
+    auto_configurer->AutoConfigure(mosaic_config_path);
 
     auto main_loop_thread_ = main_loop_thread(context, std::chrono::milliseconds(100));
     auto heartbeat_thread_ = heartbeat_thread(context, std::chrono::milliseconds(5000));
@@ -127,6 +131,11 @@ int main() {
     // Signal all threads to stop
     should_stop = true;
     std::cout << "Stopping threads..." << std::endl;
+
+    try {
+        auto_configurer->GetMosaicConnector()->ShuttingDown();
+    } catch (...) {
+    }
 
     if (main_loop_thread_.joinable()) {
         main_loop_thread_.join();
@@ -213,29 +222,35 @@ void heartbeat(const std::shared_ptr<RobotContext> &ctx) {
 }
 
 void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
-    const auto linear_x_max = 2.2;
-    const auto angular_z_max = 28.4;
+    if (!ctx->teleop_changed->load()) {
+        return;
+    }
+    if (ctx->teleop == nullptr) {
+        ctx->teleop_changed->store(false);
+        return;
+    }
 
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
+    ctx->teleop_changed->store(false);
 
-    const float linear_rand = dis(gen);
-    const float angular_rand = dis(gen);
+    const auto linear_x = ctx->teleop->linear_x;
+    const auto angular_z = ctx->teleop->angular_z;
+
+    constexpr auto linear_x_max = 2.2;
+    constexpr auto angular_z_max = 28.4;
 
     std::string sdk_msg;
 
     union Data {
         int32_t dword[6];
         uint8_t byte[4 * 6];
-    } data;
+    } data{};
 
-    data.dword[0] = static_cast<int32_t>(linear_rand * linear_x_max);
+    data.dword[0] = static_cast<int32_t>(linear_x * linear_x_max);
     data.dword[1] = 0;
     data.dword[2] = 0;
     data.dword[3] = 0;
     data.dword[4] = 0;
-    data.dword[5] = static_cast<int32_t>(angular_rand * angular_z_max);
+    data.dword[5] = static_cast<int32_t>(angular_z * angular_z_max);
 
     const uint16_t start_addr = extern_control_table.cmd_velocity_linear_x.addr;
     const uint16_t addr_length =
@@ -247,16 +262,14 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
 
     ctx->dxl_sdk_wrapper->set_data_to_device(start_addr, addr_length, p_data, &sdk_msg);
 
-    std::cout << "cmd_vel - lin_vel: " << linear_rand << " ang_vel: " << angular_rand
+    std::cout << "cmd_vel - lin_vel: " << linear_x * linear_x_max << " ang_vel: " << angular_z * angular_z_max
             << " msg : " << sdk_msg.c_str() << std::endl;
 }
 
 void laser(const std::shared_ptr<RobotContext> &ctx) {
     const auto scan = std::make_shared<LaserScan>();
     ctx->laser->poll(scan);
-    std::cout << "scan range : " << scan->ranges.size() << std::endl;
-    std::cout << "scan angle : " << scan->angle_min << " ~ " << scan->angle_max << std::endl;
-    std::cout << "scan range : " << scan->ranges[0] << " ~ " << scan->ranges[scan->ranges.size() - 1] << std::endl;
-    std::cout << "scan intensity : " << scan->intensities[0] << " ~ " << scan->intensities[scan->intensities.size() - 1]
-            << std::endl;
+    if (scan->ranges.empty()) return;
+    if (ctx->laser_scan_sender == nullptr) return;
+    ctx->laser_scan_sender->SendLaserScan(scan);
 }

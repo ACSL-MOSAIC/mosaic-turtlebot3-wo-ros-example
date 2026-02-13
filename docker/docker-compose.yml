@@ -7,6 +7,8 @@ services:
       dockerfile: docker/Dockerfile
     image: mosaic-turtlebot3-wo-ros:latest
     container_name: turtlebot3-controller
+    volumes:
+      - ./mosaic-config.yaml:/app/mosaic_config.yaml
     devices:
       - /dev/ttyACM0:/dev/ttyACM0
     privileged: true

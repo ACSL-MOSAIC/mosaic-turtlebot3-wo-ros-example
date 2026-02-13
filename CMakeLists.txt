@@ -17,6 +17,7 @@ endif ()
 set(Boost_NO_BOOST_CMAKE ON)
 find_package(dynamixel_sdk QUIET)
 find_package(Boost REQUIRED)
+find_package(mosaic-core REQUIRED)
 
 # If DynamixelSDK is not found via find_package, configure manually
 if (NOT dynamixel_sdk_FOUND)
@@ -60,6 +61,8 @@ add_executable(mosaic_turtlebot3_wo_ros_example
         src/main.cpp
         src/turtlebot3/dynamixel_sdk_wrapper.cpp
         src/hlds/hlds_laser_publisher.cpp
+        src/mosaic/laser_scan_sender.cpp
+        src/mosaic/teleop_receiver.cpp
 )
 
 target_include_directories(mosaic_turtlebot3_wo_ros_example PUBLIC
@@ -68,7 +71,9 @@ target_include_directories(mosaic_turtlebot3_wo_ros_example PUBLIC
         ${dynamixel_sdk_INCLUDE_DIRS}
         ${Boost_INCLUDE_DIRS}
 )
+
 target_link_libraries(mosaic_turtlebot3_wo_ros_example
         ${dynamixel_sdk_LIBRARIES}
         ${Boost_LIBRARIES}
+        mosaic::mosaic-core
 )

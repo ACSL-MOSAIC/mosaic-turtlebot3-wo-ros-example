@@ -14,8 +14,6 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get install -y libboost-all-dev
 
-RUN rm -rf /var/lib/apt/lists/*
-
 # Create working directory
 WORKDIR /workspace
 
@@ -23,6 +21,27 @@ WORKDIR /workspace
 RUN git clone https://github.com/ROBOTIS-GIT/DynamixelSDK.git
 WORKDIR /workspace/DynamixelSDK/c++/build/linux_sbc
 RUN make install
+
+RUN apt-get install -y libjsoncpp-dev libssl-dev libopencv-dev libwebsocketpp-dev libcpprest-dev libfmt-dev libprotobuf-dev uuid-dev
+
+RUN git clone https://github.com/jbeder/yaml-cpp.git /tmp/yaml-cpp && \
+    cd /tmp/yaml-cpp && \
+    mkdir build && cd build && \
+    cmake -DYAML_BUILD_SHARED_LIBS=ON .. && \
+    make -j$(nproc) && make install && \
+    rm -rf /tmp/yaml-cpp
+
+# Clone mosaic-core repository
+WORKDIR /workspace
+RUN git clone https://github.com/ACSL-MOSAIC/mosaic-core.git
+
+WORKDIR /workspace/mosaic-core/third_party
+RUN tar -xzvf webrtc-tarballs/webrtc-6723-arm64.tar.gz
+
+WORKDIR /workspace/mosaic-core
+RUN mkdir -p build && cd build && \
+    cmake -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_TESTS=OFF .. && \
+    make install
 
 RUN ldconfig
 
