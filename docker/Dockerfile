@@ -91,6 +91,10 @@ RUN apt-get update && apt-get install -y \
     libcpprest-dev \
     libjsoncpp-dev \
     libopencv-dev \
+    libwebsocketpp-dev \
+    libssl-dev \
+    libfmt-dev \
+    uuid-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Update library path
