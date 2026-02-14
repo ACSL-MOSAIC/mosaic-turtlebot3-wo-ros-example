@@ -12,7 +12,8 @@
 
 struct RobotContext;
 
-class LaserScanSenderConfigurer : public mosaic::auto_configurer::ADCHandlerConfigurer, TurtlebotConnectorConfigurer {
+class LaserScanSenderConfigurer : public mosaic::auto_configurer::ADCHandlerConfigurer,
+                                  public TurtlebotConnectorConfigurer {
 public:
     LaserScanSenderConfigurer() = default;
 

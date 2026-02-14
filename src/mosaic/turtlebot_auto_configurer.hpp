@@ -15,6 +15,9 @@ public:
     TurtlebotAutoConfigurer() = default;
 
     void BeforeConfigure() override {
+        if (ctx_ == nullptr) {
+            throw std::runtime_error("Robot Context is not set");
+        }
         for (const auto &configurable_connector: configurable_connectors_) {
             if (const auto connector_configurer = std::dynamic_pointer_cast<TurtlebotConnectorConfigurer>(
                 configurable_connector)) {

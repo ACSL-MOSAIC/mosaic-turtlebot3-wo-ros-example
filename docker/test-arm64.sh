@@ -25,4 +25,4 @@ echo "Press Ctrl+C to stop"
 echo ""
 
 # Run container (without USB device)
-docker run --rm -it mosaic-turtlebot3-wo-ros:arm64
+docker run --rm -it -v ./mosaic-config.yaml:/app/mosaic_config.yaml mosaic-turtlebot3-wo-ros:arm64

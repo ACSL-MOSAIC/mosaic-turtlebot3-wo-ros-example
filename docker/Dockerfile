@@ -13,14 +13,10 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get install -y libboost-all-dev
 
-# 특정 커밋 해시나 태그 사용
-ARG DYNAMIXEL_SDK_VERSION=4.0.3
-ARG MOSAIC_CORE_VERSION=v1.0.0
-ARG YAML_CPP_VERSION=0.9.0
-
 # Create working directory
 WORKDIR /workspace
 
+ARG DYNAMIXEL_SDK_VERSION=4.0.3
 # Clone and build DynamixelSDK (for Raspberry Pi)
 RUN git clone --depth 1 --branch ${DYNAMIXEL_SDK_VERSION} \
     https://github.com/ROBOTIS-GIT/DynamixelSDK.git
@@ -29,6 +25,7 @@ RUN make install
 
 RUN apt-get install -y libjsoncpp-dev libssl-dev libopencv-dev libwebsocketpp-dev libcpprest-dev libfmt-dev uuid-dev
 
+ARG YAML_CPP_VERSION=0.9.0
 RUN git clone --depth 1 --branch yaml-cpp-${YAML_CPP_VERSION}  \
     https://github.com/jbeder/yaml-cpp.git /tmp/yaml-cpp && \
     cd /tmp/yaml-cpp && \
@@ -37,20 +34,19 @@ RUN git clone --depth 1 --branch yaml-cpp-${YAML_CPP_VERSION}  \
     make -j$(nproc) && make install && \
     rm -rf /tmp/yaml-cpp
 
+ARG MOSAIC_CORE_VERSION=v1.0.1
 # Clone mosaic-core repository
 WORKDIR /workspace
 RUN git clone --depth 1 --branch ${MOSAIC_CORE_VERSION} \
-    https://github.com/ACSL-MOSAIC/mosaic-core.git
+    https://github.com/ACSL-MOSAIC/mosaic-core.git /workspace/mosaic-core
 
 WORKDIR /workspace/mosaic-core/third_party
 RUN tar -xzvf webrtc-tarballs/webrtc-6723-arm64.tar.gz
 
 WORKDIR /workspace/mosaic-core
 RUN mkdir -p build && cd build && \
-    cmake -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_TESTS=OFF .. && \
+    cmake -DBUILD_PYTHON_BINDINGS=OFF -DBUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Debug .. && \
     make install
-
-RUN ldconfig
 
 # Copy project source
 WORKDIR /workspace/project
@@ -62,8 +58,5 @@ RUN mkdir -p build && cd build && \
     cmake .. && \
     make
 
-# Set working directory
-WORKDIR /app
-
 # Run command
-CMD ["/usr/local/bin/mosaic_turtlebot3_wo_ros_example"]
+CMD ["build/mosaic_turtlebot3_wo_ros_example"]
