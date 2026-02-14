@@ -53,6 +53,8 @@ jobs:
           tags: |
             public.ecr.aws/${{ env.ECR_REGISTRY_ALIAS }}/${{ env.ECR_REPOSITORY }}:${{ steps.extract_version.outputs.VERSION }}
             public.ecr.aws/${{ env.ECR_REGISTRY_ALIAS }}/${{ env.ECR_REPOSITORY }}:latest
+          cache-from: type=registry,ref=public.ecr.aws/${{ env.ECR_REGISTRY_ALIAS }}/${{ env.ECR_REPOSITORY }}:buildcache
+          cache-to: type=registry,ref=public.ecr.aws/${{ env.ECR_REGISTRY_ALIAS }}/${{ env.ECR_REPOSITORY }}:buildcache,mode=max
 
       - name: Image digest
         run: echo "Image pushed successfully"
