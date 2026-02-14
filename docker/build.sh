@@ -9,7 +9,7 @@ PROJECT_DIR="$( cd "$SCRIPT_DIR/.." && pwd )"
 
 echo "Building Docker image..."
 cd "$SCRIPT_DIR"
-docker-compose build
+docker compose build
 
 echo ""
 echo "Build completed successfully!"

@@ -17,7 +17,7 @@ if [ ! -e /dev/ttyACM0 ]; then
 fi
 
 # Run container
-docker-compose up
+docker compose up
 
 # Clean up container on Ctrl+C
-trap "docker-compose down" EXIT
+trap "docker compose down" EXIT
