@@ -1,0 +1,28 @@
+server:
+  ws_url: 'wss://api-dev-mosaic.acslgcs.com'
+  auth:
+    type: 'no-authorization'
+    robot_id: '#####'
+    params:
+      token: '#####'
+  webrtc:
+    ice_servers:
+      - urls:
+          - 'turn.acslgcs.com:3478'
+        username: '#####'
+        credential: '#####'
+
+connectors:
+  - type: 'opencv-sender-camera'
+    label: 'camera_stream'
+    params:
+      fps: 30
+      camera_id: 0
+      width: 640
+      height: 480
+
+  - type: 'turtlebot-sender-laser-scan'
+    label: 'laser_scan'
+
+  - type: 'turtlebot-receiver-teleop'
+    label: 'teleop'
