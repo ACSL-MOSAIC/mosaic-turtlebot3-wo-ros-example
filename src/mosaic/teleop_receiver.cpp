@@ -3,7 +3,6 @@
 //
 
 #include "teleop_receiver.hpp"
-#include <json/json.h>
 #include "ctx.hpp"
 
 void TeleopReceiverConfigurer::Configure() {

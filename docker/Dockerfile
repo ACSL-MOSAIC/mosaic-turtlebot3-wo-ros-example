@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     gcc
 
 RUN apt-get install -y libboost-all-dev
+RUN apt-get install -y libjsoncpp-dev libssl-dev libopencv-dev libwebsocketpp-dev libcpprest-dev libfmt-dev uuid-dev
 
 # Create working directory
 WORKDIR /workspace
@@ -23,8 +24,6 @@ RUN git clone --depth 1 --branch ${DYNAMIXEL_SDK_VERSION} \
 WORKDIR /workspace/DynamixelSDK/c++/build/linux_sbc
 RUN make install
 
-RUN apt-get install -y libjsoncpp-dev libssl-dev libopencv-dev libwebsocketpp-dev libcpprest-dev libfmt-dev uuid-dev
-
 ARG YAML_CPP_VERSION=0.9.0
 RUN git clone --depth 1 --branch yaml-cpp-${YAML_CPP_VERSION}  \
     https://github.com/jbeder/yaml-cpp.git /tmp/yaml-cpp && \
@@ -34,7 +33,7 @@ RUN git clone --depth 1 --branch yaml-cpp-${YAML_CPP_VERSION}  \
     make -j$(nproc) && make install && \
     rm -rf /tmp/yaml-cpp
 
-ARG MOSAIC_CORE_VERSION=v1.0.2
+ARG MOSAIC_CORE_VERSION=v1.1.0
 # Clone mosaic-core repository
 WORKDIR /workspace
 RUN git clone --depth 1 --branch ${MOSAIC_CORE_VERSION} \

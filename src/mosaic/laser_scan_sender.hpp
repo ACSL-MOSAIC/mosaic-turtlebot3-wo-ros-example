@@ -7,8 +7,8 @@
 
 #include "../hlds/laser_scan.hpp"
 #include "turtlebot_connector_configurer.hpp"
-#include <mosaic/auto_configurer/connector/a_dc_handler_configurer.h>
-#include <mosaic/handlers/data_channel/data_channel_sendable.h>
+#include <mosaic/auto_configurer/connector/configurable_connectors.hpp>
+#include <mosaic/handlers/data_channel/data_channel_sendable.hpp>
 
 struct RobotContext;
 

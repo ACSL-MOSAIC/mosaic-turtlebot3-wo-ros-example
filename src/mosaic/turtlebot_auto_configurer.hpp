@@ -5,7 +5,7 @@
 #ifndef MOSAIC_TURTLEBOT3_WO_ROS_EXAMPLE_TURTLEBOT_AUTO_CONFIGURER_HPP
 #define MOSAIC_TURTLEBOT3_WO_ROS_EXAMPLE_TURTLEBOT_AUTO_CONFIGURER_HPP
 
-#include <mosaic/auto_configurer/auto_configurer.h>
+#include <mosaic/auto_configurer/auto_configurer.hpp>
 
 #include "ctx.hpp"
 #include "turtlebot_connector_configurer.hpp"

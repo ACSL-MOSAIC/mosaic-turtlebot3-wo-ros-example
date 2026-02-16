@@ -1,10 +1,10 @@
 server:
   ws_url: 'wss://api-dev-mosaic.acslgcs.com'
   auth:
-    type: 'no-authorization'
-    robot_id: '#####'
+    type: 'simple-token'
+    robot_id: '42082865-34a3-40c1-bea7-e321622d8c39'
     params:
-      token: '#####'
+      token: 'lBJJzdR2NdzMH7KPL+tWjuuCUmCsA1wtkMIfNPqeGqqA9JQGhr1WaejLt2xdqTVG8DN5Y2bSabj8taGpuuDLuK8Yx/iOQrcMRbPshrvyljU=.aTtdzHW3TngTHqJQk7dqGhaSyi4hFm88/YS4rpBELxg='
   webrtc:
     ice_servers:
       - urls:

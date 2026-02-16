@@ -2,7 +2,6 @@
 // Created by yhkim on 2026. 2. 13.
 //
 
-#include <json/json.h>
 #include "laser_scan_sender.hpp"
 
 #include "ctx.hpp"

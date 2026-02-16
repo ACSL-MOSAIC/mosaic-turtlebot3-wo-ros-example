@@ -4,7 +4,7 @@
 #include <random>
 #include <boost/asio.hpp>
 
-#include <mosaic/auto_configurer/connector/connector_resolver.h>
+#include <mosaic/auto_configurer/connector/connector_resolver.hpp>
 
 #include "ctx.hpp"
 #include "mosaic/turtlebot_auto_configurer.hpp"

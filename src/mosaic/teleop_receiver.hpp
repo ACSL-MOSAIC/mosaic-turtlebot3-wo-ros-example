@@ -5,8 +5,8 @@
 #ifndef MOSAIC_TURTLEBOT3_WO_ROS_EXAMPLE_TELEOP_RECEIVER_HPP
 #define MOSAIC_TURTLEBOT3_WO_ROS_EXAMPLE_TELEOP_RECEIVER_HPP
 
-#include <mosaic/auto_configurer/connector/a_dc_handler_configurer.h>
-#include <mosaic/handlers/data_channel/data_channel_receivable.h>
+#include <mosaic/auto_configurer/connector/configurable_connectors.hpp>
+#include <mosaic/handlers/data_channel/data_channel_receivable.hpp>
 
 #include "turtlebot_connector_configurer.hpp"
 
