@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1  # ECR Public always uses us-east-1
-  ECR_REGISTRY_ALIAS: m2q6t6y3
+  ECR_REGISTRY_ALIAS: yhkim
   ECR_REPOSITORY: mosaic/mosaic-turtlebot-ex
 
 jobs:

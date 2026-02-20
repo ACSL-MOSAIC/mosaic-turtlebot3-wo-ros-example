@@ -33,7 +33,7 @@ RUN git clone --depth 1 --branch yaml-cpp-${YAML_CPP_VERSION}  \
     make -j$(nproc) && make install && \
     rm -rf /tmp/yaml-cpp
 
-ARG MOSAIC_CORE_VERSION=v1.1.0
+ARG MOSAIC_CORE_VERSION=v1.1.2
 # Clone mosaic-core repository
 WORKDIR /workspace
 RUN git clone --depth 1 --branch ${MOSAIC_CORE_VERSION} \
