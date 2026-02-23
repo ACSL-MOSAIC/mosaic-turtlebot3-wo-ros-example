@@ -232,8 +232,8 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
 
     ctx->teleop_changed->store(false);
 
-    const auto linear_x = ctx->teleop->linear_x;
-    const auto angular_z = ctx->teleop->angular_z;
+    const auto linear_x = ctx->teleop->linear.x;
+    const auto angular_z = ctx->teleop->angular.z;
 
     constexpr auto linear_x_max = 2.2;
     constexpr auto angular_z_max = 28.4;

@@ -1,0 +1,52 @@
+{
+  "widgets": [
+    {
+      "id": "a2609bd0-8f31-4f6a-be01-8ec0bfcd515b",
+      "type": "MediaViewerWidget",
+      "position": {
+        "h": 5,
+        "w": 6,
+        "x": 4,
+        "y": 3
+      },
+      "connectors": [
+        {
+          "robotId": "992ed98a-9a14-47cb-b57d-af582d30da9e",
+          "connectorId": "video_stream"
+        }
+      ]
+    },
+    {
+      "id": "ee23a8a0-f3f6-4d60-abe8-71d8b1e61b6b",
+      "type": "JsonViewerWidget",
+      "position": {
+        "h": 3,
+        "w": 3,
+        "x": 4,
+        "y": 0
+      },
+      "connectors": [
+        {
+          "robotId": "992ed98a-9a14-47cb-b57d-af582d30da9e",
+          "connectorId": "laser_scan"
+        }
+      ]
+    },
+    {
+      "id": "ee23a8a0-f3f6-4d60-abe8-71d8b1e61b6b",
+      "type": "ThumbstickSenderWidget",
+      "position": {
+        "h": 3,
+        "w": 3,
+        "x": 4,
+        "y": 0
+      },
+      "connectors": [
+        {
+          "robotId": "992ed98a-9a14-47cb-b57d-af582d30da9e",
+          "connectorId": "teleop"
+        }
+      ]
+    }
+  ]
+}

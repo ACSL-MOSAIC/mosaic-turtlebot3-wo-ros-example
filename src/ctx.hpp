@@ -21,9 +21,21 @@ typedef struct {
     float profile_acceleration;
 } Motors;
 
+struct Linear {
+    float x;
+    float y;
+    float z;
+};
+
+struct Angular {
+    float x;
+    float y;
+    float z;
+};
+
 struct Teleop {
-    float linear_x;
-    float angular_z;
+    Linear linear;
+    Angular angular;
 };
 
 struct RobotContext {

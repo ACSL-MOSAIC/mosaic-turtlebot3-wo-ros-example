@@ -1,0 +1,22 @@
+{
+  "connectors": [
+    {
+      "params": {
+        "fps": "30",
+        "camera_id": "0",
+        "width": "640",
+        "height": "480"
+      },
+      "connectorId": "camera_stream",
+      "connectorType": "media"
+    },
+    {
+      "connectorId": "laser_scan",
+      "connectorType": "json-receivable"
+    },
+    {
+      "connectorId": "teleop",
+      "connectorType": "thumbstick-to-twist"
+    }
+  ]
+}

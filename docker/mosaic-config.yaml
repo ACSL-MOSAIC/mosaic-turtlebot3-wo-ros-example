@@ -16,10 +16,10 @@ connectors:
   - type: 'opencv-sender-camera'
     label: 'camera_stream'
     params:
-      fps: 30
-      camera_id: 0
-      width: 640
-      height: 480
+      fps: '30'
+      camera_id: '0'
+      width: '640'
+      height: '480'
 
   - type: 'turtlebot-sender-laser-scan'
     label: 'laser_scan'
