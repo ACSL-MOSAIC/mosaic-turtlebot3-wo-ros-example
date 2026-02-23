@@ -12,12 +12,12 @@
       "connectors": [
         {
           "robotId": "992ed98a-9a14-47cb-b57d-af582d30da9e",
-          "connectorId": "video_stream"
+          "connectorId": "camera_stream"
         }
       ]
     },
     {
-      "id": "ee23a8a0-f3f6-4d60-abe8-71d8b1e61b6b",
+      "id": "ee23a8a0-f3f6-4d60-abe8-71d8b1e61b6c",
       "type": "JsonViewerWidget",
       "position": {
         "h": 3,

@@ -267,9 +267,15 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
 }
 
 void laser(const std::shared_ptr<RobotContext> &ctx) {
-    if (ctx->laser == nullptr || ctx->laser_scan_sender) return;
+    if (ctx->laser == nullptr || ctx->laser_scan_sender) {
+        std::cout << "Laser is not initialized" << std::endl;
+        return;
+    }
     const auto scan = std::make_shared<LaserScan>();
     ctx->laser->poll(scan);
-    if (scan->ranges.empty()) return;
+    if (scan->ranges.empty()) {
+        std::cout << "Laser scan is empty" << std::endl;
+        return;
+    }
     ctx->laser_scan_sender->SendLaserScan(scan);
 }

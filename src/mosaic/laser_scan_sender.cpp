@@ -14,6 +14,7 @@ void LaserScanSenderConfigurer::Configure() {
 
 void LaserScanSender::SendLaserScan(const std::shared_ptr<LaserScan> &scan) const {
     if (!Sendable()) {
+        MOSAIC_LOG_INFO("Laser scan sender is not sendable.");
         return;
     }
 
