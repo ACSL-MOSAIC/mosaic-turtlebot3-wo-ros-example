@@ -5,12 +5,18 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    image: public.ecr.aws/m2q6t6y3/mosaic/mosaic-turtlebot-ex:latest
+    image: public.ecr.aws/yhkim/mosaic/mosaic-turtlebot-ex:latest
     container_name: turtlebot3-controller
     volumes:
       - ./mosaic-config.yaml:/app/mosaic_config.yaml
-    devices:
-      - /dev/ttyACM0:/dev/ttyACM0
+    cap_add:
+      - SYS_NICE
+    ulimits:
+      rtprio: 99
+      rttime: -1
+      memlock: 8428281856
+    ipc: host
+    pid: host
     privileged: true
     restart: unless-stopped
     stdin_open: true
