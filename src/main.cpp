@@ -265,7 +265,7 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
 
     uint8_t *p_data = &data.byte[0];
 
-    // std::cout << "attempt to send data to opencr" << std::endl;
+    std::cout << "attempt to send data to opencr" << std::endl;
 
     ctx->dxl_sdk_wrapper->set_data_to_device(start_addr, addr_length, p_data, &sdk_msg);
 
