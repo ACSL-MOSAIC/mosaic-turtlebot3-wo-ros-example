@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <atomic>
+#include <mutex>
 #include <random>
 #include <boost/asio.hpp>
 
@@ -233,6 +234,9 @@ void heartbeat(const std::shared_ptr<RobotContext> &ctx) {
 }
 
 void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
+    static std::mutex cmd_vel_mutex;
+    std::lock_guard<std::mutex> lock(cmd_vel_mutex);
+
     if (ctx->teleop == nullptr) {
         return;
     }
