@@ -34,8 +34,8 @@ struct Angular {
 };
 
 struct Teleop {
-    Linear linear;
-    Angular angular;
+    std::shared_ptr<Linear> linear;
+    std::shared_ptr<Angular> angular;
 };
 
 struct RobotContext {
@@ -50,7 +50,6 @@ struct RobotContext {
     std::shared_ptr<LaserScanSender> laser_scan_sender;
     // Teleop related
     std::shared_ptr<Teleop> teleop;
-    std::shared_ptr<std::atomic_bool> teleop_changed;
 };
 
 #endif //MOSAIC_TURTLEBOT3_WO_ROS_EXAMPLE_CTX_HPP

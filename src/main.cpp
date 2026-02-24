@@ -93,6 +93,10 @@ int main() {
     const auto hlds_io_context = std::make_shared<boost::asio::io_context>();
     const auto laser_ = std::make_shared<hls_lfcd_lds::LFCDLaser>(hlds_usb_port, 230400, *hlds_io_context);
 
+    auto init_linear = std::make_shared<Linear>(Linear{});
+    auto init_angular = std::make_shared<Angular>(Angular{});
+    auto init_teleop = Teleop{init_linear, init_angular};
+
     // Create robot context
     const auto context = std::make_shared<RobotContext>(RobotContext{
         dxl_sdk_wrapper,
@@ -101,8 +105,7 @@ int main() {
         hlds_io_context,
         laser_,
         nullptr,
-        nullptr,
-        std::make_shared<std::atomic_bool>(false)
+        std::make_shared<Teleop>(init_teleop)
     });
 
     // Initialize MOSAIC
@@ -242,8 +245,8 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
         return;
     }
 
-    const auto linear_x = ctx->teleop->linear.x;
-    const auto angular_z = ctx->teleop->angular.z;
+    const auto linear_x = ctx->teleop->linear->x;
+    const auto angular_z = ctx->teleop->angular->z;
 
     constexpr auto linear_x_max = 22;
     constexpr auto angular_z_max = 284;
@@ -270,14 +273,12 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
 
     uint8_t *p_data = &data.byte[0];
 
-    std::cout << "attempt to send data to opencr" << std::endl;
+    // std::cout << "attempt to send data to opencr" << std::endl;
 
     ctx->dxl_sdk_wrapper->set_data_to_device(start_addr, addr_length, p_data, &sdk_msg);
 
-    ctx->teleop = nullptr;
-
-    // std::cout << "cmd_vel - lin_vel: " << linear_x * linear_x_max << " ang_vel: " << angular_z * angular_z_max
-    // << " msg : " << sdk_msg.c_str() << std::endl;
+    std::cout << "cmd_vel - lin_vel: " << linear_x * linear_x_max << " ang_vel: " << angular_z * angular_z_max
+            << " msg : " << sdk_msg.c_str() << std::endl;
 }
 
 void laser(const std::shared_ptr<RobotContext> &ctx) {

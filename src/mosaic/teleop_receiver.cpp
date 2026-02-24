@@ -26,15 +26,14 @@ void TeleopReceiver::HandleData(const Json::Value &data) {
         ctx_->teleop = std::make_shared<Teleop>();
     }
 
-    ctx_->teleop->linear.x = linear["x"].asFloat();
-    ctx_->teleop->angular.z = angular["z"].asFloat();
+    ctx_->teleop->linear->x = linear["x"].asFloat();
+    ctx_->teleop->angular->z = angular["z"].asFloat();
 
     float linear_x = linear["x"].asFloat();
     float angular_z = angular["z"].asFloat();
 
-    ctx_->teleop->linear.x = linear_x;
-    ctx_->teleop->angular.z = angular_z;
-    ctx_->teleop_changed->store(true);
+    ctx_->teleop->linear->x = linear_x;
+    ctx_->teleop->angular->z = angular_z;
 
     MOSAIC_LOG_INFO("Teleop command received: linear_x = {}, angular_z = {}", linear_x, angular_z);
 }
