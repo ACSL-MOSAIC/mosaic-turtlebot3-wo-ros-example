@@ -14,11 +14,11 @@ void LaserScanSenderConfigurer::Configure() {
 
 void LaserScanSender::SendLaserScan(const std::shared_ptr<LaserScan> &scan) const {
     if (!Sendable()) {
-        MOSAIC_LOG_INFO("Laser scan sender is not sendable.");
+        // MOSAIC_LOG_INFO("Laser scan sender is not sendable.");
         return;
     }
 
-    MOSAIC_LOG_INFO("Send laser scan");
+    // MOSAIC_LOG_INFO("Send laser scan");
 
     Json::Value laser_scan_json;
     laser_scan_json["angle_min"] = scan->angle_min;

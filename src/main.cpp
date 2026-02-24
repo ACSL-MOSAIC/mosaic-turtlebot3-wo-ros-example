@@ -115,7 +115,7 @@ int main() {
 
     auto main_loop_thread_ = main_loop_thread(context, std::chrono::milliseconds(100));
     auto heartbeat_thread_ = heartbeat_thread(context, std::chrono::milliseconds(5000));
-    auto cmd_vel_thread_ = cmd_vel_thread(context, std::chrono::milliseconds(3000));
+    auto cmd_vel_thread_ = cmd_vel_thread(context, std::chrono::milliseconds(100));
     auto laser_thread_ = laser_thread(context, std::chrono::milliseconds(100));
 
     std::cout << "Wait until Keyboard Interrupt" << std::endl;
@@ -248,8 +248,8 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
     const auto linear_x = ctx->teleop->linear.x;
     const auto angular_z = ctx->teleop->angular.z;
 
-    constexpr auto linear_x_max = 1000.0;  // m/s to mm/s conversion
-    constexpr auto angular_z_max = 1000.0; // rad/s scaling for OpenCR
+    constexpr auto linear_x_max = 2.2;
+    constexpr auto angular_z_max = 28.4;
 
     std::string sdk_msg;
 
