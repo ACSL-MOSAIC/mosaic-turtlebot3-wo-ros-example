@@ -269,16 +269,19 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
 void laser(const std::shared_ptr<RobotContext> &ctx) {
     if (ctx->laser == nullptr) {
         std::cout << "Laser is not initialized" << std::endl;
+        return;
     }
     if (ctx->laser_scan_sender == nullptr) {
         std::cout << "Laser scan sender is not initialized" << std::endl;
         return;
     }
+    std::cout << "Laser poll start" << std::endl; // 추가
     const auto scan = std::make_shared<LaserScan>();
     ctx->laser->poll(scan);
     if (scan->ranges.empty()) {
         std::cout << "Laser scan is empty" << std::endl;
         return;
     }
+    std::cout << "Laser poll end, ranges: " << scan->ranges.size() << std::endl;
     ctx->laser_scan_sender->SendLaserScan(scan);
 }
