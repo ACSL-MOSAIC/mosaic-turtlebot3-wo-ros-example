@@ -199,7 +199,18 @@ void check_device_status(const std::shared_ptr<DynamixelSDKWrapper> &dxl_sdk_wra
 
     if (constexpr int8_t NOT_CONNECTED_MOTOR = -1; device_status == NOT_CONNECTED_MOTOR) {
         std::cout << "Please check your Dynamixels and Power" << std::endl;
+        return;
     }
+
+    // Enable motor torque
+    std::string torque_msg;
+    uint8_t torque_enable = 1;
+    dxl_sdk_wrapper_->set_data_to_device(
+        extern_control_table.motor_torque_enable.addr,
+        extern_control_table.motor_torque_enable.length,
+        &torque_enable,
+        &torque_msg);
+    std::cout << "Motor Torque Enable: " << torque_msg << std::endl;
 }
 
 void main_loop(const std::shared_ptr<RobotContext> &ctx) {
