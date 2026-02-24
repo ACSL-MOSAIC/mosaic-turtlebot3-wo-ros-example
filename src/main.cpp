@@ -116,7 +116,7 @@ int main() {
 
     auto main_loop_thread_ = main_loop_thread(context, std::chrono::milliseconds(100));
     auto heartbeat_thread_ = heartbeat_thread(context, std::chrono::milliseconds(5000));
-    auto cmd_vel_thread_ = cmd_vel_thread(context, std::chrono::milliseconds(100));
+    auto cmd_vel_thread_ = cmd_vel_thread(context, std::chrono::milliseconds(20));  // 50Hz, same frequency as ROS2 typical teleop
     auto laser_thread_ = laser_thread(context, std::chrono::milliseconds(100));
 
     std::cout << "Wait until Keyboard Interrupt" << std::endl;
