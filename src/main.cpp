@@ -222,13 +222,15 @@ void heartbeat(const std::shared_ptr<RobotContext> &ctx) {
 }
 
 void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
-    if (!ctx->teleop_changed->load()) {
+    if (ctx->teleop_changed->load()) {
         return;
     }
     if (ctx->teleop == nullptr) {
         ctx->teleop_changed->store(false);
         return;
     }
+
+    std::cout << "cmd_vel start" << std::endl;
 
     ctx->teleop_changed->store(false);
 
@@ -260,6 +262,8 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
 
     uint8_t *p_data = &data.byte[0];
 
+    std::cout << "attempt to send data to opencr" << std::endl;
+
     ctx->dxl_sdk_wrapper->set_data_to_device(start_addr, addr_length, p_data, &sdk_msg);
 
     std::cout << "cmd_vel - lin_vel: " << linear_x * linear_x_max << " ang_vel: " << angular_z * angular_z_max
@@ -268,20 +272,20 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
 
 void laser(const std::shared_ptr<RobotContext> &ctx) {
     if (ctx->laser == nullptr) {
-        std::cout << "Laser is not initialized" << std::endl;
+        // std::cout << "Laser is not initialized" << std::endl;
         return;
     }
     if (ctx->laser_scan_sender == nullptr) {
-        std::cout << "Laser scan sender is not initialized" << std::endl;
+        // std::cout << "Laser scan sender is not initialized" << std::endl;
         return;
     }
-    std::cout << "Laser poll start" << std::endl; // 추가
+    // std::cout << "Laser poll start" << std::endl; // 추가
     const auto scan = std::make_shared<LaserScan>();
     ctx->laser->poll(scan);
     if (scan->ranges.empty()) {
         std::cout << "Laser scan is empty" << std::endl;
         return;
     }
-    std::cout << "Laser poll end, ranges: " << scan->ranges.size() << std::endl;
+    // std::cout << "Laser poll end, ranges: " << scan->ranges.size() << std::endl;
     ctx->laser_scan_sender->SendLaserScan(scan);
 }
