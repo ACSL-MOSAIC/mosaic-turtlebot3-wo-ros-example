@@ -233,17 +233,9 @@ void heartbeat(const std::shared_ptr<RobotContext> &ctx) {
 }
 
 void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
-    if (!ctx->teleop_changed->load()) {
-        return;
-    }
     if (ctx->teleop == nullptr) {
-        ctx->teleop_changed->store(false);
         return;
     }
-
-    // std::cout << "cmd_vel start" << std::endl;
-
-    ctx->teleop_changed->store(false);
 
     const auto linear_x = ctx->teleop->linear.x;
     const auto angular_z = ctx->teleop->angular.z;
@@ -278,7 +270,7 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
     ctx->dxl_sdk_wrapper->set_data_to_device(start_addr, addr_length, p_data, &sdk_msg);
 
     // std::cout << "cmd_vel - lin_vel: " << linear_x * linear_x_max << " ang_vel: " << angular_z * angular_z_max
-            // << " msg : " << sdk_msg.c_str() << std::endl;
+    // << " msg : " << sdk_msg.c_str() << std::endl;
 }
 
 void laser(const std::shared_ptr<RobotContext> &ctx) {
