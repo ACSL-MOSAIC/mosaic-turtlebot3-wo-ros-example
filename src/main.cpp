@@ -116,7 +116,8 @@ int main() {
 
     auto main_loop_thread_ = main_loop_thread(context, std::chrono::milliseconds(100));
     auto heartbeat_thread_ = heartbeat_thread(context, std::chrono::milliseconds(5000));
-    auto cmd_vel_thread_ = cmd_vel_thread(context, std::chrono::milliseconds(20));  // 50Hz, same frequency as ROS2 typical teleop
+    auto cmd_vel_thread_ = cmd_vel_thread(context, std::chrono::milliseconds(20));
+    // 50Hz, same frequency as ROS2 typical teleop
     auto laser_thread_ = laser_thread(context, std::chrono::milliseconds(100));
 
     std::cout << "Wait until Keyboard Interrupt" << std::endl;
@@ -272,6 +273,8 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
     std::cout << "attempt to send data to opencr" << std::endl;
 
     ctx->dxl_sdk_wrapper->set_data_to_device(start_addr, addr_length, p_data, &sdk_msg);
+
+    ctx->teleop = nullptr;
 
     // std::cout << "cmd_vel - lin_vel: " << linear_x * linear_x_max << " ang_vel: " << angular_z * angular_z_max
     // << " msg : " << sdk_msg.c_str() << std::endl;
