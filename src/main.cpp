@@ -222,7 +222,7 @@ void heartbeat(const std::shared_ptr<RobotContext> &ctx) {
 }
 
 void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
-    if (ctx->teleop_changed->load()) {
+    if (!ctx->teleop_changed->load()) {
         return;
     }
     if (ctx->teleop == nullptr) {
