@@ -237,8 +237,8 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
     const auto linear_x = ctx->teleop->linear.x;
     const auto angular_z = ctx->teleop->angular.z;
 
-    constexpr auto linear_x_max = 2.2;
-    constexpr auto angular_z_max = 28.4;
+    constexpr auto linear_x_max = 1000.0;  // m/s to mm/s conversion
+    constexpr auto angular_z_max = 1000.0; // rad/s scaling for OpenCR
 
     std::string sdk_msg;
 
