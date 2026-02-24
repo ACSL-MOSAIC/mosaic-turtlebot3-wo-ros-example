@@ -241,15 +241,15 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
         return;
     }
 
-    std::cout << "cmd_vel start" << std::endl;
+    // std::cout << "cmd_vel start" << std::endl;
 
     ctx->teleop_changed->store(false);
 
     const auto linear_x = ctx->teleop->linear.x;
     const auto angular_z = ctx->teleop->angular.z;
 
-    constexpr auto linear_x_max = 2.2;
-    constexpr auto angular_z_max = 28.4;
+    constexpr auto linear_x_max = 22;
+    constexpr auto angular_z_max = 284;
 
     std::string sdk_msg;
 
@@ -273,12 +273,12 @@ void cmd_vel(const std::shared_ptr<RobotContext> &ctx) {
 
     uint8_t *p_data = &data.byte[0];
 
-    std::cout << "attempt to send data to opencr" << std::endl;
+    // std::cout << "attempt to send data to opencr" << std::endl;
 
     ctx->dxl_sdk_wrapper->set_data_to_device(start_addr, addr_length, p_data, &sdk_msg);
 
-    std::cout << "cmd_vel - lin_vel: " << linear_x * linear_x_max << " ang_vel: " << angular_z * angular_z_max
-            << " msg : " << sdk_msg.c_str() << std::endl;
+    // std::cout << "cmd_vel - lin_vel: " << linear_x * linear_x_max << " ang_vel: " << angular_z * angular_z_max
+            // << " msg : " << sdk_msg.c_str() << std::endl;
 }
 
 void laser(const std::shared_ptr<RobotContext> &ctx) {
